@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvDice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Yacht Dice" />
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="게임하기"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnRecord"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="기록보기"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="종료하기" />
+
+</LinearLayout>
