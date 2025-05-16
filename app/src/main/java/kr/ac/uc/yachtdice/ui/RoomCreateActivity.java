@@ -1,9 +1,12 @@
-package kr.ac.uc.yachtdice;
+package kr.ac.uc.yachtdice.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import kr.ac.uc.yachtdice.R;
+import kr.ac.uc.yachtdice.game.WaitingRoomActivity;
 
 public class RoomCreateActivity extends AppCompatActivity {
 
@@ -26,11 +29,11 @@ public class RoomCreateActivity extends AppCompatActivity {
             }
 
             // TODO: 서버에 방 생성 요청 (지금은 생략)
-//            Intent intent = new Intent(this, WaitingRoomActivity.class);
-//            intent.putExtra("roomCode", code);
-//            intent.putExtra("playerName", "호스트");
-//            startActivity(intent);
-//            finish();
+            Intent intent = new Intent(this, WaitingRoomActivity.class);
+            intent.putExtra("roomCode", code);
+            intent.putExtra("playerName", "호스트");
+            startActivity(intent);
+            finish();
         });
     }
 }
