@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- 현재 턴 텍스트 -->
+    <TextView
+        android:id="@+id/playerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="현재 턴:"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 주사위 영역 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="12dp">
+
+        <!-- 주사위 0~4 (ImageView + 투명 Button 겹치기) -->
+        <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_margin="4dp">
+            <ImageView android:id="@+id/diceImg0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:contentDescription="주사위0" />
+            <Button android:id="@+id/diceBtn0" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/transparent" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_margin="4dp">
+            <ImageView android:id="@+id/diceImg1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:contentDescription="주사위1" />
+            <Button android:id="@+id/diceBtn1" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/transparent" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_margin="4dp">
+            <ImageView android:id="@+id/diceImg2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:contentDescription="주사위2" />
+            <Button android:id="@+id/diceBtn2" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/transparent" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_margin="4dp">
+            <ImageView android:id="@+id/diceImg3" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:contentDescription="주사위3" />
+            <Button android:id="@+id/diceBtn3" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/transparent" />
+        </FrameLayout>
+        <FrameLayout android:layout_width="60dp" android:layout_height="60dp" android:layout_margin="4dp">
+            <ImageView android:id="@+id/diceImg4" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:contentDescription="주사위4" />
+            <Button android:id="@+id/diceBtn4" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@android:color/transparent" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- 주사위 굴리기 버튼 -->
+    <Button
+        android:id="@+id/rollButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="주사위 굴리기"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 다음 턴 버튼 -->
+    <Button
+        android:id="@+id/nextTurnButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="다음 턴으로"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 점수판 (플레이어 수에 따라 동적 구성됨) -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="12dp">
+        <TableLayout
+            android:id="@+id/scoreTable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1,2,3,4"
+            android:background="#EEEEEE" />
+    </ScrollView>
+
+    <!-- 채팅 영역 -->
+    <ScrollView
+        android:id="@+id/chatScroll"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="16dp">
+        <TextView
+            android:id="@+id/chatMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f0f0f0"
+            android:padding="8dp"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+    </ScrollView>
+
+    <!-- 채팅 입력 -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+        <EditText
+            android:id="@+id/chatInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="메시지 입력" />
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="전송" />
+    </LinearLayout>
+</LinearLayout>
