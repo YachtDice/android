@@ -80,8 +80,9 @@
     <ScrollView
         android:id="@+id/chatScroll"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="232dp"
         android:layout_marginTop="16dp">
+
         <TextView
             android:id="@+id/chatMessages"
             android:layout_width="match_parent"
