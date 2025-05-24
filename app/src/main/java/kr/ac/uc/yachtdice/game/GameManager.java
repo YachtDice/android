@@ -23,6 +23,10 @@ public class GameManager {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
     public boolean isGameOver() {
         for (Player player : players) {
             if (player.getScoreBoard().size() < ScoreCategory.values().length) {

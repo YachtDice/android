@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
 
     private GameManager gameManager;
 
-    // 주사위 이미지와 버튼 분리
     private ImageView[] diceImages = new ImageView[5];
     private Button[] diceButtons = new Button[5];
 
@@ -30,12 +29,13 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView chatScroll;
     private Button sendButton;
 
+    private final int[] playerColors = { Color.RED, Color.BLUE, Color.YELLOW, Color.GREEN };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 전달받은 플레이어 목록 없으면 기본 2명으로 테스트
         ArrayList<String> playerNames = getIntent().getStringArrayListExtra("players");
         if (playerNames == null || playerNames.isEmpty()) {
             playerNames = new ArrayList<>();
@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         btnNextTurn = findViewById(R.id.nextTurnButton);
         scoreTable = findViewById(R.id.scoreTable);
 
-        // 주사위 ImageView + Button 동시 초기화
         for (int i = 0; i < 5; i++) {
             int imgId = getResources().getIdentifier("diceImg" + i, "id", getPackageName());
             int btnId = getResources().getIdentifier("diceBtn" + i, "id", getPackageName());
@@ -79,12 +78,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnNextTurn.setOnClickListener(v -> {
-            if (gameManager.getCurrentPlayer().hasSelectedAll()) {
-                gameManager.nextTurn();
-                updateUI();
-            } else {
-                Toast.makeText(this, "점수를 먼저 선택하세요.", Toast.LENGTH_SHORT).show();
+            Player currentPlayer = gameManager.getCurrentPlayer();
+
+            if (!currentPlayer.hasSelectedScoreThisTurn()) {
+                Toast.makeText(this, "점수를 먼저 선택해야 턴을 넘길 수 있습니다.", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            currentPlayer.resetTurn();  // rollCount, holds, dice 초기화
+            gameManager.nextTurn();
+            updateUI();
         });
 
         chatMessages = findViewById(R.id.chatMessages);
@@ -107,8 +110,13 @@ public class MainActivity extends AppCompatActivity {
     private void setupScoreTable() {
         TableRow header = new TableRow(this);
         header.addView(makeCell("카테고리"));
-        for (Player p : gameManager.getPlayers()) {
-            header.addView(makeCell(p.getName()));
+
+        List<Player> players = gameManager.getPlayers();
+        for (int i = 0; i < players.size(); i++) {
+            TextView nameCell = makeCell(players.get(i).getName());
+            nameCell.setTextColor(playerColors[i % playerColors.length]);
+            nameCell.setTag("player_name_" + i); // 현재 턴 강조용
+            header.addView(nameCell);
         }
         scoreTable.addView(header);
 
@@ -116,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
             TableRow row = new TableRow(this);
             row.addView(makeCell(getDisplayName(category)));
 
-            for (Player p : gameManager.getPlayers()) {
+            for (Player p : players) {
                 TextView scoreCell = makeCell("-");
                 scoreCell.setTag(p.getName() + "_" + category.name());
                 scoreCell.setOnClickListener(v -> handleScoreSelection(category));
@@ -126,32 +134,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private TextView makeCell(String text) {
-        TextView tv = new TextView(this);
-        tv.setText(text);
-        tv.setPadding(12, 6, 12, 6);
-        tv.setGravity(Gravity.CENTER);
-        return tv;
-    }
-
-    private String getDisplayName(ScoreCategory category) {
-        switch (category) {
-            case ONES: return "1";
-            case TWOS: return "2";
-            case THREES: return "3";
-            case FOURS: return "4";
-            case FIVES: return "5";
-            case SIXES: return "6";
-            case CHOICE: return "Choice";
-            case FOUR_OF_A_KIND: return "4Kind";
-            case FULL_HOUSE: return "Full";
-            case SMALL_STRAIGHT: return "S. Straight";
-            case LARGE_STRAIGHT: return "L. Straight";
-            case YACHT: return "Yacht";
-        }
-        return category.name();
-    }
-
     private void updateUI() {
         updateTurnUI();
         updateDiceUI();
@@ -159,8 +141,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateTurnUI() {
+        int currentIndex = gameManager.getCurrentPlayerIndex();
         txtCurrentPlayer.setText("🎯 현재 턴: " + gameManager.getCurrentPlayer().getName());
-        txtCurrentPlayer.setTextColor(Color.parseColor("#1E88E5"));
+        txtCurrentPlayer.setTextColor(playerColors[currentIndex % playerColors.length]);
+
+        // 점수판 상단 플레이어 이름 강조
+        for (int i = 0; i < gameManager.getPlayers().size(); i++) {
+            TextView nameView = scoreTable.findViewWithTag("player_name_" + i);
+            if (nameView != null) {
+                nameView.setBackgroundColor(i == currentIndex ? Color.LTGRAY : Color.TRANSPARENT);
+            }
+        }
     }
 
     private void updateDiceUI() {
@@ -168,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         boolean[] holds = gameManager.getCurrentPlayer().getHoldStatus();
         for (int i = 0; i < 5; i++) {
             int value = values[i];
-            int resId = getResources().getIdentifier("dice_face_" + value, "drawable", getPackageName());
+            int resId = (value == 0) ? R.drawable.dice_face_1 : getResources().getIdentifier("dice_face_" + value, "drawable", getPackageName());
 
             if (resId != 0) {
                 diceImages[i].setImageResource(resId);
@@ -195,13 +186,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleScoreSelection(ScoreCategory category) {
         Player currentPlayer = gameManager.getCurrentPlayer();
+        if (currentPlayer.getRollCount() == 0) {
+            Toast.makeText(this, "주사위를 먼저 굴려야 점수를 선택할 수 있습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (currentPlayer.selectCategory(category)) {
             updateScoreBoardUI();
             if (gameManager.isGameOver()) {
                 showGameResult();
             } else {
-                gameManager.nextTurn();
-                updateUI();
+                // 점수 선택 후 직접 버튼 눌러야 턴이 넘어가도록 변경됨
             }
         } else {
             Toast.makeText(this, "이미 선택한 항목입니다.", Toast.LENGTH_SHORT).show();
@@ -214,5 +209,31 @@ public class MainActivity extends AppCompatActivity {
             result.append(p.getName()).append(" 점수: ").append(p.getTotalScore()).append("\n");
         }
         Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    private TextView makeCell(String text) {
+        TextView tv = new TextView(this);
+        tv.setText(text);
+        tv.setPadding(12, 6, 12, 6);
+        tv.setGravity(Gravity.CENTER);
+        return tv;
+    }
+
+    private String getDisplayName(ScoreCategory category) {
+        switch (category) {
+            case ONES: return "1";
+            case TWOS: return "2";
+            case THREES: return "3";
+            case FOURS: return "4";
+            case FIVES: return "5";
+            case SIXES: return "6";
+            case CHOICE: return "Choice";
+            case FOUR_OF_A_KIND: return "4Kind";
+            case FULL_HOUSE: return "Full";
+            case SMALL_STRAIGHT: return "S. Straight";
+            case LARGE_STRAIGHT: return "L. Straight";
+            case YACHT: return "Yacht";
+        }
+        return category.name();
     }
 }

@@ -9,12 +9,20 @@ public class Player {
     private int rollCount = 0;
     private Map<ScoreCategory, Integer> scoreBoard = new EnumMap<>(ScoreCategory.class);
 
+    public int getRollCount() {
+        return rollCount;
+    }
+
     public Player(String name) {
         this.name = name;
     }
 
     public String getName() {
         return name;
+    }
+
+    public boolean hasSelectedScoreThisTurn() {
+        return rollCount == 0 && !scoreBoard.isEmpty();
     }
 
     public int[] getDiceValues() {
@@ -54,6 +62,11 @@ public class Player {
         rollCount = 0;
         Arrays.fill(holds, false);
         return true;
+    }
+    public void resetTurn() {
+        rollCount = 0;
+        Arrays.fill(holds, false);
+        Arrays.fill(dice, 0);
     }
 
     public int getTotalScore() {
